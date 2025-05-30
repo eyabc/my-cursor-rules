@@ -13,30 +13,33 @@ related_docs: [".cursor/docs/scripts.md", "package.json"]
 
 # Command & Script Documentation Rule
 
-rule:
-  name: document_commands_and_scripts
-  description: 프롬프트 실행 시마다, 해당 프롬프트에서 사용되거나 생성된 모든 command와, 프로젝트에 존재하는 스크립트 명령어(예: npm scripts, Makefile, yarn scripts 등)를 문서화해야 합니다. 각 명령어는 실행 예시, 설명, 관련 파일(예: package.json, Makefile 등)과 함께 정리되어야 하며, 프레임워크별로 구분하여 작성합니다.
+<rule>
+name: document_commands_and_scripts
+description: 프롬프트 실행 시마다, 해당 프롬프트에서 사용되거나 생성된 모든 command와, 프로젝트에 존재하는 스크립트 명령어(예: npm scripts, Makefile, yarn scripts 등)를 문서화해야 합니다. 각 명령어는 실행 예시, 설명, 관련 파일(예: package.json, Makefile 등)과 함께 정리되어야 하며, 프레임워크별로 구분하여 작성합니다.
 
-  filters:
-    - type: file_pattern
-      pattern: "package.json|Makefile|*.sh|*.cmd|*.ps1|*.bat"
+filters:
+  - type: file_pattern
+    pattern: "package.json|Makefile|*.sh|*.cmd|*.ps1|*.bat"
 
-  actions:
-    - type: require_documentation
-      output_file: `@.cursor/docs/scripts.md`
-      targets:
-        - commands: 모든 프롬프트 실행 시 생성·사용된 command
-        - scripts: 프로젝트 내 정의된 모든 스크립트 명령어
-      documentation_format: |
-        ## [프레임워크/환경명] 명령어 목록
+actions:
+  - type: require_documentation
+    output_file: "@.cursor/docs/scripts.md"
+    targets:
+      - commands: 모든 프롬프트 실행 시 생성·사용된 command
+      - scripts: 프로젝트 내 정의된 모든 스크립트 명령어
+    documentation_format: |
+      ## [프레임워크/환경명] 명령어 목록
 
-        | 명령어             | 설명                        | 실행 예시           | 정의 위치           |
-        |--------------------|-----------------------------|---------------------|---------------------|
-        | [명령어/스크립트]  | [설명]                      | `[실행 예시]`       | [package.json 등]   |
+      | 명령어             | 설명                        | 실행 예시           | 정의 위치           |
+      |--------------------|-----------------------------|---------------------|---------------------|
+      | [명령어/스크립트]  | [설명]                      | `[실행 예시]`       | [package.json 등]   |
 
-        - 각 명령어는 실제 사용 예시와 함께, 무엇을 하는지 명확히 설명해야 합니다.
-        - 프레임워크별(예: React, Next.js, Express 등)로 별도 섹션을 두어 구분합니다.
-        - 신규 command가 프롬프트에서 발생하면 즉시 위 표에 추가해야 합니다.
+      - 각 명령어는 실제 사용 예시와 함께, 무엇을 하는지 명확히 설명해야 합니다.
+      - 프레임워크별(예: React, Next.js, Express 등)로 별도 섹션을 두어 구분합니다.
+      - 신규 command가 프롬프트에서 발생하면 즉시 위 표에 추가해야 합니다.
 
-      message: |
-        모든 command 및 스크립트 명령어는 프롬프트 실행 시마다 문서화되어야 하며, 각 명령어는 실행 예시, 설명, 정의 위치와 함께 표로 정리해야 합니다. 프레임워크별로 구분하여 작성하세요.
+    message: |
+      모든 command 및 스크립트 명령어는 프롬프트 실행 시마다 문서화되어야 하며, 각 명령어는 실행 예시, 설명, 정의 위치와 함께 표로 정리해야 합니다. 프레임워크별로 구분하여 작성하세요.
+</rule>
+
+

@@ -1,0 +1,155 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+name: create-dev-env-command-rules
+description: |
+  개발 환경 자동화 스크립트(dev-env.sh)는 다음의 기준을 반드시 만족해야 합니다.
+  - macOS와 Linux에서 모두 동작해야 하며, OS별로 새 터미널 실행 함수(run_in_new_terminal_macos, run_in_new_terminal_linux)를 별도로 구현해야 합니다.
+  - 임시 스크립트 파일을 활용하여 명령어를 실행하고, 터미널 명령 실행 후 임시 파일을 자동 정리해야 합니다.
+  - osascript 등 OS 기본 기능을 활용할 때는 안정적인 구문을 사용해야 하며, 오류 발생 시 handle_error 함수로 일관되게 처리해야 합니다.
+  - 모든 주요 작업(디렉토리, 파일, Docker, 환경 변수 등)에 대해 오류 체크 및 성공/실패 메시지를 명확히 출력해야 하며, 실패 시 cleanup 함수로 자동 정리를 수행해야 합니다.
+  - Docker Compose 파일과 .env(.env.example) 파일의 존재 여부를 반드시 체크해야 하며, 없을 경우 명확한 안내 후 종료해야 합니다.
+  - Docker 리소스 최적화(optimize_docker) 로직을 포함하고, 컨테이너별 메모리/CPU 제한을 docker-compose.yml에 자동 반영해야 합니다.
+  - 서버(Next.js, Flutter 등) 실행 시, 각 서비스의 디렉토리 존재 여부를 사전 확인하고, 새 터미널에서 실행하며, 서버 시작 대기(sleep 3) 후 다음 작업을 진행해야 합니다.
+  - SIGINT, SIGTERM 등 종료 시그널을 받아 cleanup 함수가 반드시 호출되도록 트랩을 설정해야 합니다.
+  - 스크립트는 모든 상태 메시지를 색상(성공/실패/경고)으로 구분해 출력해야 합니다.
+  - 스크립트 마지막에는 프로세스 모니터링 메시지를 출력하고 tail -f /dev/null로 유지해야 합니다.
+globs:
+  - "scripts/dev-env.sh"
+trigger: Always
+related_docs:
+  - "create-dev-env-command-script-rules.md"
+---
+
+# 개발 환경 자동화 스크립트 규칙 (create-dev-env-command-rules)
+
+
+name: dev_env_script_must_support_cross_platform_terminal
+description: |
+  dev-env.sh는 macOS와 Linux 환경 모두에서 새 터미널 창에서 명령어를 실행할 수 있어야 합니다.
+  - run_in_new_terminal_macos, run_in_new_terminal_linux 함수로 분리 구현
+  - 임시 스크립트 파일을 생성하여 명령 실행 후 자동 삭제 처리
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "run_in_new_terminal_macos"
+        message: "macOS용 새 터미널 실행 함수(run_in_new_terminal_macos)가 필요합니다."
+      - pattern: "run_in_new_terminal_linux"
+        message: "Linux용 새 터미널 실행 함수(run_in_new_terminal_linux)가 필요합니다."
+      - pattern: "mktemp"
+        message: "임시 스크립트 파일을 생성(mktemp)해야 합니다."
+
+
+
+name: dev_env_script_must_have_consistent_error_handling
+description: |
+  모든 주요 작업(디렉토리, 파일, Docker, 환경 변수 등) 실패 시 handle_error 함수로 일관되게 오류를 처리해야 합니다.
+  - handle_error 함수에서 cleanup을 호출하고, 명확한 메시지 출력 후 종료
+  - check_status 함수로 성공/실패를 구분해 출력
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "handle_error"
+        message: "handle_error 함수가 필요합니다."
+      - pattern: "cleanup"
+        message: "cleanup 함수가 필요합니다."
+      - pattern: "check_status"
+        message: "check_status 함수가 필요합니다."
+      - pattern: "handle_error.*cleanup"
+        message: "오류 발생 시 cleanup 함수가 반드시 호출되어야 합니다."
+
+
+
+name: dev_env_script_must_check_critical_files_and_directories
+description: |
+  dev-env.sh는 docker-compose.yml, .env, .env.example, 각 서비스 디렉토리의 존재 여부를 반드시 체크해야 합니다.
+  - 파일/디렉토리 미존재 시 handle_error로 종료
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "\$$ ! -f \"docker-compose.yml\" \$$"
+        message: "docker-compose.yml 파일 존재 여부를 체크해야 합니다."
+      - pattern: "\$$ ! -f \\.env \$$"
+        message: ".env 파일 존재 여부를 체크해야 합니다."
+      - pattern: "\$$ -f \\.env.example \$$"
+        message: ".env.example 파일 존재 여부를 체크해야 합니다."
+      - pattern: "check_directory"
+        message: "서비스 디렉토리 존재 여부는 check_directory 함수로 확인해야 합니다."
+
+
+
+name: dev_env_script_must_optimize_docker_and_limit_resources
+description: |
+  Docker 리소스 최적화(optimize_docker) 로직을 포함해야 하며, 컨테이너별 메모리/CPU 제한을 docker-compose.yml에 자동 반영해야 합니다.
+  - docker system prune -f 실행
+  - sed 명령으로 docker-compose.yml 내 리소스 제한 환경변수(MEMORY_LIMIT, CPU_LIMIT) 자동 수정
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "docker system prune -f"
+        message: "Docker 리소스 정리를 위해 docker system prune -f를 사용해야 합니다."
+      - pattern: "sed -i"
+        message: "docker-compose.yml 내 리소스 제한을 sed로 수정해야 합니다."
+
+
+
+name: dev_env_script_must_handle_signals_and_cleanup
+description: |
+  SIGINT, SIGTERM 시그널 발생 시 cleanup 함수가 반드시 호출되어야 합니다.
+  - trap cleanup SIGINT SIGTERM 구문 필수
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "trap cleanup SIGINT SIGTERM"
+        message: "SIGINT, SIGTERM 시그널에 대해 cleanup 함수가 호출되어야 합니다."
+
+
+
+name: dev_env_script_must_use_colored_output
+description: |
+  모든 상태 메시지는 GREEN, RED, YELLOW 등 색상 코드로 구분해 출력해야 합니다.
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "GREEN='\\\\033\$$0;32m'"
+        message: "성공 메시지용 GREEN 색상 코드가 정의되어야 합니다."
+      - pattern: "RED='\\\\033\$$0;31m'"
+        message: "실패 메시지용 RED 색상 코드가 정의되어야 합니다."
+      - pattern: "YELLOW='\\\\033\$$1;33m'"
+        message: "경고 메시지용 YELLOW 색상 코드가 정의되어야 합니다."
+
+
+
+name: dev_env_script_must_monitor_processes_at_end
+description: |
+  스크립트 마지막에는 프로세스 모니터링 메시지를 출력하고 tail -f /dev/null로 프로세스를 유지해야 합니다.
+filters:
+  - type: file_name
+    pattern: "^dev-env\\.sh$"
+actions:
+  - type: require
+    conditions:
+      - pattern: "tail -f /dev/null"
+        message: "스크립트 마지막에 tail -f /dev/null로 프로세스를 유지해야 합니다."
+
