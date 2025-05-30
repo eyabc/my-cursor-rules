@@ -1,0 +1,215 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+name: Flutter 모바일 앱 성능 최적화 가이드
+description: Flutter를 이용한 모바일 앱 개발 시 성능 최적화를 위한 종합적인 가이드라인 및 모범 사례
+globs: ["**/*.dart", "**/*.yaml", "**/*.md"]
+trigger: Always
+---
+
+# Flutter 모바일 앱 성능 최적화 가이드
+
+
+name: flutter_performance_optimization
+description: Flutter 모바일 앱의 성능을 최적화하기 위한 핵심 원칙과 실무 가이드라인
+
+## **렌더링 최적화**
+
+### **위젯 리빌드 최소화**
+- **const 생성자 활용**: 불변 위젯에는 반드시 `const` 키워드 사용
+- **StatelessWidget 우선 사용**: 동적 변경이 없는 기능은 StatelessWidget으로 구현
+- **작은 위젯 단위로 분할**: "분할 정복" 접근법으로 필요한 부분만 업데이트
+- **setState() 호출 최소화**: 상태 관리 솔루션(Riverpod, Bloc) 활용
+
+### **Impeller 렌더러 최적화**
+- **2025년 기본 렌더러**: Impeller의 안정화된 성능 활용
+- **셰이더 사전 컴파일**: 빌드 프로세스에서 셰이더 컴파일 포함
+- **런타임 셰이더 컴파일 방지**: 애니메이션 끊김 현상 제거
+
+### **효율적인 리스트 렌더링**
+```dart
+// 권장: 지연 로딩 방식
+ListView.builder(
+  itemCount: items.length,
+  itemBuilder: (context, index) => ItemWidget(items[index]),
+)
+
+// 비권장: 모든 아이템 한번에 생성
+ListView(children: items.map((item) => ItemWidget(item)).toList())
+```
+
+## **메모리 관리**
+
+### **리소스 해제**
+- **dispose() 메서드 구현**: StreamSubscription, AnimationController, TextEditingController 해제
+- **메모리 누수 방지**: 전역 변수와 정적 필드 사용 최소화
+- **dart:developer 활용**: 메모리 프로파일링으로 누수 지점 식별
+
+### **이미지 최적화**
+```dart
+// CachedNetworkImage 사용 권장
+CachedNetworkImage(
+  imageUrl: imageUrl,
+  placeholder: (context, url) => CircularProgressIndicator(),
+  errorWidget: (context, url, error) => Icon(Icons.error),
+  memCacheWidth: 300, // 메모리 사용량 제한
+)
+```
+
+## **앱 시작 시간 최적화**
+
+### **지연 로딩 구현**
+- **deferred import 활용**: 필요시에만 모듈 로드
+```dart
+import 'package:feature_module/feature.dart' deferred as feature;
+
+// 사용 시점에 로드
+await feature.loadLibrary();
+feature.showFeature();
+```
+
+### **백그라운드 데이터 동기화**
+- **WorkManager 활용**: 앱 시작 전 데이터 준비
+- **Isolate 기반 처리**: 메인 스레드 블로킹 방지
+
+## **상태 관리 최적화**
+
+### **세밀한 상태 관리**
+```dart
+// Riverpod 활용한 세밀한 상태 관리
+final counterProvider = StateProvider((ref) => 0);
+
+Consumer(
+  builder: (context, ref, child) {
+    final count = ref.watch(counterProvider);
+    return Text('$count'); // 카운터 변경시에만 리빌드
+  },
+)
+```
+
+### **비동기 UI 처리**
+- **flutter_hooks 활용**: 위젯 라이프사이클 관리 개선
+- **FutureBuilder/StreamBuilder 최적화**: 불필요한 리빌드 방지
+
+## **네트워크 최적화**
+
+### **API 효율성**
+- **페이지네이션 구현**: 대용량 데이터 분할 로드
+- **GZIP 압축**: 응답 데이터 크기 최소화
+- **GraphQL 활용**: 필요한 데이터만 요청
+
+### **캐싱 전략**
+```dart
+// flutter_query 활용한 효율적 캐싱
+final query = useQuery(
+  'posts',
+  () => fetchPosts(),
+  config: QueryConfig(
+    cacheDuration: Duration(minutes: 5),
+    staleDuration: Duration(minutes: 1),
+  ),
+);
+```
+
+## **번들 크기 최적화**
+
+### **빌드 최적화**
+```bash
+# ABI별 분할 빌드
+flutter build apk --split-per-abi
+
+# 앱 번들 생성 (권장)
+flutter build appbundle
+
+# 코드 난독화
+flutter build apk --obfuscate --split-debug-info=debug-info/
+```
+
+### **자산 최적화**
+- **이미지 압축**: WebP 포맷 사용 권장
+- **사용하지 않는 자산 제거**: 정기적인 자산 정리
+- **벡터 그래픽 활용**: SVG 파일로 확장성 확보
+
+## **성능 모니터링**
+
+### **개발 단계 프로파일링**
+```dart
+// Flutter DevTools 활용
+import 'dart:developer' as developer;
+
+void performanceTrace() {
+  developer.Timeline.startSync('expensive_operation');
+  // 비용이 많이 드는 작업
+  developer.Timeline.finishSync();
+}
+```
+
+### **실사용자 모니터링**
+- **Firebase Performance Monitoring**: 실제 사용자 환경에서의 성능 측정
+- **Sentry 통합**: 크래시 및 성능 이슈 추적
+
+## **플랫폼별 최적화**
+
+### **Android 최적화**
+- **R8 컴파일러**: 코드 축소 및 난독화
+- **ProGuard 규칙**: 필요한 클래스 보호
+
+### **iOS 최적화**
+- **Bitcode 활용**: App Store 최적화
+- **Metal 렌더링**: 하드웨어 가속 활용
+
+## **테스팅 및 검증**
+
+### **성능 테스트**
+```dart
+// 위젯 성능 테스트
+testWidgets('performance test', (WidgetTester tester) async {
+  await tester.pumpWidget(MyApp());
+  
+  // 프레임 렌더링 시간 측정
+  await tester.binding.delayed(Duration(seconds: 1));
+  expect(tester.binding.hasScheduledFrame, false);
+});
+```
+
+### **메모리 테스트**
+- **메모리 누수 검사**: 정기적인 메모리 프로파일링
+- **부하 테스트**: 대용량 데이터 처리 시나리오 검증
+
+filters:
+- type: file_extension
+  pattern: "\\.dart$"
+
+actions:
+- type: validate_performance
+  conditions:
+  - check_const_constructors: true
+  - check_stateless_widgets: true
+  - check_dispose_methods: true
+  - check_image_optimization: true
+  message: "성능 최적화 가이드라인을 준수하여 개발하세요"
+
+- type: suggest_optimization
+  conditions:
+  - detect_heavy_builds: true
+  - detect_memory_leaks: true
+  message: "성능 개선이 필요한 코드가 감지되었습니다"
+
+
+Citations:
+[1] https://mobidev.biz/blog/flutter-app-development
+[2] https://www.miquido.com/blog/flutter-app-performance/
+[3] https://github.com/sanjeed5/awesome-cursor-rules-mdc/blob/main/rules-mdc/flutter.mdc
+[4] https://vibe-studio.ai/insights/best-practices-for-flutter-performance-optimization-in-2025
+[5] https://somniosoftware.com/blog/13-best-practices-for-flutter-performance-optimization
+[6] https://www.bacancytechnology.com/blog/flutter-performance
+[7] https://www.mindinventory.com/blog/flutter-development-best-practices/
+[8] https://www.linkedin.com/pulse/secret-building-high-performance-flutter-apps-2025-gza3f
+[9] https://docs.flutter.dev/perf/best-practices
+[10] https://www.sphinx-solution.com/blog/guide-for-flutter-app-development/
+
+---
+Perplexity로부터의 답변: pplx.ai/share
