@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+name: 프로젝트 디렉터리 구조 (Depth 2)
+description: 프로젝트 루트로부터 depth 2까지의 디렉터리 및 파일 구조를 트리 형태로 명확히 문서화합니다. 이 문서는 신규 팀원이나 자동화 도구가 프로젝트 전체 구조를 빠르게 파악할 수 있도록 돕습니다.
+globs: ["@.cursor/docs/project-directory-structure.md"]
+related_docs: ["@rules/my_rules/example/project-directory-structure.mdc"]
+---
+
+
+# 프로젝트 디렉터리 구조 (Depth 2)
+
+<rule>
+name: update_directory_structure
+description: 프로젝트 루트로부터 depth 2까지의 디렉터리 및 파일 구조를 트리 형태로 문서화합니다.
+trigger: Always
+
+filters:
+- type: directory_change
+  pattern: "**/*"
+
+actions:
+- type: update_directory_tree
+  depth: 2
+  output_file: "@.cursor/docs/project-directory-structure.md"
+  template: |
+    # 📁 프로젝트 디렉터리 구조
+    ```
+    {tree}
+    ```
+
+    ## 📖 디렉터리 설명
+
+    각 디렉터리의 주요 역할과 포함된 파일들에 대한 설명이 여기에 추가됩니다.
+    디렉터리 구조가 변경될 때마다 이 문서는 자동으로 업데이트됩니다.
+</rule>
+

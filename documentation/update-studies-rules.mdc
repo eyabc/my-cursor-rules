@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+name: 필수 개발 지식 문서 자동 생성
+trigger: Always
+description: 프로젝트 작업 시, 사용자가 반드시 알아야 할 핵심 개발 지식과 배경 정보를 간결하게 정리하여 docs/study 디렉터리에 문서로 자동 생성합니다. 이를 통해 개발자가 프로젝트의 구조, 기술 스택, 주요 개념을 빠르게 파악할 수 있도록 지원합니다.
+globs: ["**/*"]
+related_docs: ["docs/study/README.md"]
+---
+
+# 필수 개발 지식 문서 자동 생성 규칙
+
+<rule>
+name: essential_development_knowledge_auto_doc
+description: 각 프롬프트 실행 시, 해당 작업을 이해하는 데 필요한 핵심 개발 지식(프로젝트 구조, 기술 스택, 주요 개념, 용어 정의 등)을 간결하게 정리하여 docs/study 디렉터리에 마크다운 문서로 업데이트 합니다.
+이 문서는 프로젝트의 기술적 이해도를 높이고, 효율적인 개발 및 유지보수에 큰 도움이 됩니다.
+
+filters:
+- type: prompt_execution
+  pattern: ".*"
+
+actions:
+- type: generate_markdown
+  target_directory: "docs/study"
+  contents: 
+    - (작업에 필요한 개발 원리, 패턴, 주요 개념 설명)
+</rule>
