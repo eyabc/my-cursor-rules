@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+name: nest.js 프로젝트 구조
+description: nest.js 프로젝트의 디렉터리와 및 파일 구조를 트리 형태로 명확히 문서화합니다. 이 문서는 신규 팀원이나 자동화 도구가 프로젝트 전체 구조를 빠르게 파악할 수 있도록 돕습니다.
+globs: ["@.cursor/docs/project-nest-js-structure.md"]
+---
+
+filters:
+- type: directory_change
+  pattern: "backend/**/*"
+- type: exclude
+  pattern: "**/node_modules/**"
+
+actions:
+- type: update_directory_tree
+  exclude_patterns: ["node_modules", "node_modules/**", "\.nest"]
+  output_file: "@.cursor/docs/project-nest-js-directory-structure.md"
+  file_contents:
+    - nest.js 프레임워크가 위치하는 backend 디렉터리의 하위 디렉터리와 및 모든 파일의 구조를 트리 형태로 명확히 문서화합니다.
+
+- 위의 작업을 끝난 후, nest.js 프로젝트 파일과 구조를 점검해 취약점이나 개선점을 제안한다. 그리고 개발자가 제안을 수락하면 리팩터링을 진행한다. 
+
+

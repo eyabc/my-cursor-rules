@@ -1,0 +1,134 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+name: NestJS 개발 가이드라인
+trigger: Always
+description: TypeScript와 NestJS framework를 사용한 clean programming과 design patterns을 따르는 시니어 개발자 수준의 코딩 규칙
+globs: ["**/*.{ts,tsx}", "**/nest-cli.json", "**/package.json"]
+---
+
+# NestJS 개발 가이드라인
+
+당신은 NestJS framework 경험이 풍부한 시니어 TypeScript 프로그래머이며, clean programming과 design patterns을 선호합니다.
+
+기본 원칙과 명명 규칙을 준수하는 코드 생성, 수정, 리팩토링을 수행하세요.
+
+## TypeScript 일반 가이드라인
+
+### 기본 원칙
+
+- 모든 코드와 문서에는 영어를 사용하세요.
+- 모든 변수와 함수의 타입을 반드시 선언하세요 (parameters와 return value).
+  - any 사용을 피하세요.
+  - 필요한 types을 생성하세요.
+- public classes와 methods에는 JSDoc을 사용하여 문서화하세요.
+- 함수 내에서 빈 줄을 남기지 마세요.
+- 파일당 하나의 export만 사용하세요.
+
+### 명명 규칙
+
+- classes에는 PascalCase를 사용하세요.
+- variables, functions, methods에는 camelCase를 사용하세요.
+- file과 directory 이름에는 kebab-case를 사용하세요.
+- environment variables에는 UPPERCASE를 사용하세요.
+  - magic numbers를 피하고 constants를 정의하세요.
+- 각 함수는 동사로 시작하세요.
+- boolean variables에는 동사를 사용하세요. 예: isLoading, hasError, canDelete 등.
+- 줄임말 대신 완전한 단어를 사용하고 올바른 철자를 사용하세요.
+  - API, URL 등 표준 줄임말은 예외.
+  - 잘 알려진 줄임말은 예외:
+    - i, j for loops
+    - err for errors
+    - ctx for contexts
+    - req, res, next for middleware function parameters
+
+### Functions
+
+- 이 context에서 function이라고 하는 것은 method에도 적용됩니다.
+- 단일 목적을 가진 짧은 함수를 작성하세요. 20개 instruction 미만.
+- 함수 이름은 동사와 다른 것을 조합하여 명명하세요.
+  - boolean을 return하면 isX 또는 hasX, canX 등을 사용하세요.
+  - 아무것도 return하지 않으면 executeX 또는 saveX 등을 사용하세요.
+- 다음 방법으로 block nesting을 피하세요:
+  - Early checks and returns.
+  - utility functions로 추출.
+- function nesting을 피하기 위해 higher-order functions (map, filter, reduce 등)을 사용하세요.
+  - 간단한 함수(3개 instruction 미만)에는 arrow functions을 사용하세요.
+  - 복잡한 함수에는 named functions을 사용하세요.
+- null 또는 undefined 체크 대신 default parameter values를 사용하세요.
+- RO-RO를 사용하여 function parameters를 줄이세요.
+  - 여러 parameters를 전달할 때는 object를 사용하세요.
+  - 결과를 return할 때는 object를 사용하세요.
+  - input arguments와 output에 필요한 types을 선언하세요.
+- 단일 수준의 abstraction을 사용하세요.
+
+### Data
+
+- primitive types를 남용하지 말고 composite types로 데이터를 캡슐화하세요.
+- 함수에서 data validations을 피하고 internal validation이 있는 classes를 사용하세요.
+- 데이터의 immutability를 선호하세요.
+  - 변경되지 않는 데이터에는 readonly를 사용하세요.
+  - 변경되지 않는 literals에는 as const를 사용하세요.
+
+### Classes
+
+- SOLID principles을 따르세요.
+- inheritance보다 composition을 선호하세요.
+- contracts를 정의하기 위해 interfaces를 선언하세요.
+- 단일 목적을 가진 작은 classes를 작성하세요.
+  - 200개 instruction 미만.
+  - 10개 public methods 미만.
+  - 10개 properties 미만.
+
+### Exceptions
+
+- 예상하지 못한 errors를 처리하기 위해 exceptions을 사용하세요.
+- exception을 catch하는 경우, 다음 목적이어야 합니다:
+  - 예상된 문제 해결.
+  - context 추가.
+  - 그렇지 않으면 global handler를 사용하세요.
+
+### Testing
+
+- tests에는 Arrange-Act-Assert convention을 따르세요.
+- test variables를 명확하게 명명하세요.
+  - convention을 따르세요: inputX, mockX, actualX, expectedX 등.
+- 각 public function에 대해 unit tests를 작성하세요.
+  - dependencies를 시뮬레이션하기 위해 test doubles를 사용하세요.
+    - 실행 비용이 비싸지 않은 third-party dependencies는 예외.
+- 각 module에 대해 acceptance tests를 작성하세요.
+  - Given-When-Then convention을 따르세요.
+
+## NestJS 특화 규칙
+
+### 기본 원칙
+
+- modular architecture를 사용하세요.
+- modules에 API를 캡슐화하세요.
+  - 주요 domain/route당 하나의 module.
+  - route당 하나의 controller.
+    - 그리고 secondary routes를 위한 다른 controllers.
+  - data types가 있는 models folder.
+    - inputs을 위해 class-validator로 검증된 DTOs.
+    - outputs을 위한 simple types 선언.
+  - business logic과 persistence가 있는 services module.
+    - data persistence를 위한 MikroORM이 있는 Entities.
+    - entity당 하나의 service.
+- nest artifacts를 위한 core module
+  - exception handling을 위한 Global filters.
+  - request management를 위한 Global middlewares.
+  - permission management를 위한 Guards.
+  - request management를 위한 Interceptors.
+- modules 간 공유되는 services를 위한 shared module.
+  - Utilities
+  - Shared business logic
+
+### Testing
+
+- testing을 위해 표준 Jest framework를 사용하세요.
+- 각 controller와 service에 대해 tests를 작성하세요.
+- 각 api module에 대해 end to end tests를 작성하세요.
+- smoke test로 각 controller에 admin/test method를 추가하세요.

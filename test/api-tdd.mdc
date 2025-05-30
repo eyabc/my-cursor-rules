@@ -1,0 +1,70 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: API 개발을 위한 TDD 룰 - REST, GraphQL 지원
+globs: **/api/**/*.{js,ts,py}
+---
+
+# API 개발 TDD 룰
+
+## API 테스트 구조
+1. **요청/응답 테스트**
+```
+describe('POST /api/users', () => {
+it('should create user and return 201 status', async () => {
+// Given
+const userData = { name: 'John', email: 'john@example.com' };
+
+   // When
+   const response = await request(app)
+     .post('/api/users')
+     .send(userData);
+   
+   // Then
+   expect(response.status).toBe(201);
+   expect(response.body).toHaveProperty('id');
+   expect(response.body.name).toBe(userData.name);
+ });
+});
+
+```
+
+2. **에러 처리 테스트**
+```
+it('should return 400 when invalid email provided', async () => {
+// Given
+const invalidData = { name: 'John', email: 'invalid-email' };
+
+ // When
+ const response = await request(app)
+   .post('/api/users')
+   .send(invalidData);
+ 
+ // Then
+ expect(response.status).toBe(400);
+ expect(response.body.error).toContain('Invalid email');
+});
+
+```
+
+## API 테스트 시나리오
+- 정상적인 요청/응답 플로우
+- 잘못된 입력 데이터 처리
+- 인증/권한 검증
+- 데이터베이스 연동 확인
+- 중복 요청 처리
+- 대용량 데이터 처리
+
+## Mock 데이터 관리
+- 테스트용 데이터베이스 분리
+- 테스트 후 데이터 정리 (cleanup)
+- 외부 API 호출 모킹
+- 테스트 간 데이터 독립성 보장
+
+## API 문서화 연동
+- 테스트 케이스를 기반으로 API 문서 자동 생성
+- Swagger/OpenAPI 스펙과 테스트 케이스 동기화
+- 예제 요청/응답 데이터 테스트 케이스에서 추출
