@@ -15,7 +15,7 @@ related_docs: ["docs/context-mapper-website.md"]
 
 
 name: context_mapper_website_generation
-description: /context-mapper/src-gen 디렉터리의 파일들을 읽어, 이해하기 쉬운 순서로 리스트를 생성하고, 웹사이트에 렌더링합니다. 각 바운디드컨텍스트 파일의 주석 내용을 /context-mapper/contents에 저장하며, context-description-loader가 다이어그램 아래에 내용을 폴딩/오픈 기능과 함께 추가합니다. 확장자별로 mmd, puml, png, svg에 맞는 렌더링 어댑터를 사용합니다. 모든 결과는 바닐라 JS/HTML/CSS로 구현된 웹사이트에 반영되어야 합니다.
+description: /context-mapper/src-gen /context-mapper/src-gen-cursor 디렉터리의 파일들을 읽어, 이해하기 쉬운 순서로 리스트를 생성하고, 웹사이트에 렌더링합니다. 각 바운디드컨텍스트 파일의 주석 내용을 /context-mapper/contents에 저장하며, context-description-loader가 다이어그램 아래에 내용을 폴딩/오픈 기능과 함께 추가합니다. 확장자별로 mmd, puml, png, svg에 맞는 렌더링 어댑터를 사용합니다. 모든 결과는 바닐라 JS/HTML/CSS로 구현된 웹사이트에 반영되어야 합니다.
 
 filters:
   - type: directory
