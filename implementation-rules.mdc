@@ -7,6 +7,7 @@ alwaysApply: true
 - .cursor/rules/my_rules/test/api-tdd.mdc
 - .cursor/rules/my_rules/test/js-tdd.mdc
 - .cursor/rules/my_rules/test/red-green-refactor.mdc
+- .cursot/rules/my_rules/test/general-test.mdc
 cursor Rules 를 준수해줘.
 
 수정하고 개발하고자 하는 언어에 대한 cursor Rules 들은 .cursor/rules/my_rules/languages 디렉터리에 정의 되어 있어.

@@ -1,0 +1,199 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+Airbnb JavaScript 스타일 가이드의 26.4번까지의 모든 소제목을 포함한 완전한 목차를 영어 원문 그대로 정리해드리겠습니다.
+
+## Table of Contents
+
+1. **Types**
+   - 1.1 **Primitives**: When you access a primitive type you work directly on its value
+   - 1.2 **Complex**: When you access a complex type you work on a reference to its value
+
+2. **References**
+   - 2.1 Use `const` for all of your references; avoid using `var`
+   - 2.2 If you must reassign references, use `let` instead of `var`
+   - 2.3 Note that both `let` and `const` are block-scoped
+
+3. **Objects**
+   - 3.1 Use the literal syntax for object creation
+   - 3.2 Use computed property names when creating objects with dynamic property names
+   - 3.3 Use object method shorthand
+   - 3.4 Use property value shorthand
+   - 3.5 Group your shorthand properties at the beginning of your object declaration
+   - 3.6 Only quote properties that are invalid identifiers
+   - 3.7 Do not call `Object.prototype` methods directly, such as `hasOwnProperty`, `propertyIsEnumerable`, and `isPrototypeOf`
+   - 3.8 Prefer the object spread operator over Object.assign to shallow-copy objects
+
+4. **Arrays**
+   - 4.1 Use the literal syntax for array creation
+   - 4.2 Use Array#push instead of direct assignment to add items to an array
+   - 4.3 Use array spreads `...` to copy arrays
+   - 4.4 To convert an array-like object to an array, use spreads `...` instead of Array.from
+   - 4.5 Use Array.from instead of spread `...` for mapping over iterables
+   - 4.6 Use return statements in array method callbacks
+   - 4.7 Use line breaks after open and before close array brackets if an array has multiple lines
+
+5. **Destructuring**
+   - 5.1 Use object destructuring when accessing and using multiple properties of an object
+   - 5.2 Use array destructuring
+   - 5.3 Use object destructuring for multiple return values, not array destructuring
+
+6. **Strings**
+   - 6.1 Use single quotes `''` for strings
+   - 6.2 Strings that cause the line to go over 100 characters should not be written across multiple lines using string concatenation
+   - 6.3 When programmatically building up strings, use template strings instead of concatenation
+   - 6.4 Never use `eval()` on a string, it opens too many vulnerabilities
+   - 6.5 Do not unnecessarily escape characters in strings
+
+7. **Functions**
+   - 7.1 Use named function expressions instead of function declarations
+   - 7.2 Wrap immediately invoked function expressions in parentheses
+   - 7.3 Never declare a function in a non-function block (`if`, `while`, etc)
+   - 7.4 **Note:** ECMA-262 defines a `block` as a list of statements
+   - 7.5 Never name a parameter `arguments`
+   - 7.6 Never use `arguments`, opt to use rest syntax `...` instead
+   - 7.7 Use default parameter syntax rather than mutating function arguments
+   - 7.8 Avoid side effects with default parameters
+   - 7.9 Always put default parameters last
+   - 7.10 Never use the Function constructor to create a new function
+   - 7.11 Spacing in a function signature
+   - 7.12 Never mutate parameters
+   - 7.13 Never reassign parameters
+   - 7.14 Prefer the use of the spread operator `...` to call variadic functions
+   - 7.15 Functions with multiline signatures, or invocations, should be indented just like every other multiline list in this guide
+
+8. **Arrow Functions**
+   - 8.1 When you must use an anonymous function (as when passing an inline callback), use arrow function notation
+   - 8.2 If the function body consists of a single statement returning an expression without side effects, omit the braces and use the implicit return
+   - 8.3 In case the expression spans over multiple lines, wrap it in parentheses for better readability
+   - 8.4 If your function takes a single argument and doesn't use braces, omit the parentheses
+   - 8.5 Avoid confusing arrow function syntax (`=>`) with comparison operators (`<=`, `>=`)
+
+9. **Classes & Constructors**
+   - 9.1 Always use `class`. Avoid manipulating `prototype` directly
+   - 9.2 Use `extends` for inheritance
+   - 9.3 Methods can return `this` to help with method chaining
+   - 9.4 It's okay to write a custom toString() method, just make sure it works successfully and causes no side effects
+   - 9.5 Classes have a default constructor if one is not specified
+   - 9.6 Avoid duplicate class members
+
+10. **Modules**
+    - 10.1 Always use modules (`import`/`export`) over a non-standard module system
+    - 10.2 Do not use wildcard imports
+    - 10.3 And do not export directly from an import
+    - 10.4 Only import from a path in one place
+    - 10.5 Do not export mutable bindings
+    - 10.6 In modules with a single export, prefer default export over named export
+    - 10.7 Put all `import`s above non-import statements
+    - 10.8 Multiline imports should be indented just like multiline array and object literals
+    - 10.9 Disallow Webpack loader syntax in module import statements
+
+11. **Iterators and Generators**
+    - 11.1 Don't use iterators. Prefer JavaScript's higher-order functions instead of loops like `for-in` or `for-of`
+    - 11.2 Don't use generators for now
+    - 11.3 If you must use generators, or if you disregard our advice, make sure their function signature is spaced properly
+
+12. **Properties**
+    - 12.1 Use dot notation when accessing properties
+    - 12.2 Use bracket notation `[]` when accessing properties with a variable
+    - 12.3 Use exponentiation operator `**` when calculating exponentiations
+
+13. **Variables**
+    - 13.1 Always use `const` or `let` to declare variables
+    - 13.2 Use one `const` or `let` declaration per variable
+    - 13.3 Group all your `const`s and then group all your `let`s
+    - 13.4 Assign variables where you need them, but place them in a reasonable place
+    - 13.5 Don't chain variable assignments
+    - 13.6 Avoid using unary increments and decrements (++, --)
+    - 13.7 Avoid linebreaks before or after `=` in an assignment
+
+14. **Hoisting**
+    - 14.1 `var` declarations get hoisted to the top of their closest enclosing function scope
+    - 14.2 Anonymous function expressions hoist their variable name, but not the function assignment
+    - 14.3 Named function expressions hoist the variable name, not the function name or the function body
+    - 14.4 Function declarations hoist their name and the function body
+
+15. **Comparison Operators & Equality**
+    - 15.1 Use `===` and `!==` over `==` and `!=`
+    - 15.2 Conditional statements such as the `if` statement evaluate their expression using coercion with the `ToBoolean` abstract method
+    - 15.3 Use shortcuts for booleans, but explicit comparisons for strings and numbers
+    - 15.4 For more information see Truth Equality and JavaScript by Angus Croll
+    - 15.5 Use braces to create blocks in `case` and `default` clauses that contain lexical declarations
+    - 15.6 Ternaries should not be nested and generally be single line expressions
+    - 15.7 Avoid unneeded ternary statements
+    - 15.8 When mixing operators, enclose them in parentheses
+
+16. **Blocks**
+    - 16.1 Use braces with all multi-line blocks
+    - 16.2 If you're using multi-line blocks with `if` and `else`, put `else` on the same line as your `if` block's closing brace
+    - 16.3 If an `if` block always executes a `return` statement, the subsequent `else` block is unnecessary
+
+17. **Control Statements**
+    - 17.1 In case your control statement (`if`, `while` etc.) gets too long or exceeds the maximum line length, each (grouped) condition could be put into a new line
+    - 17.2 Don't use selection operators in place of control statements
+
+18. **Comments**
+    - 18.1 Use `/** ... */` for multi-line comments
+    - 18.2 Use `//` for single line comments
+    - 18.3 Start all comments with a space to make it easier to read
+    - 18.4 Prefixing your comments with `FIXME` or `TODO` helps other developers quickly understand
+    - 18.5 Use `// FIXME:` to annotate problems
+    - 18.6 Use `// TODO:` to annotate solutions to problems
+
+19. **Whitespace**
+    - 19.1 Use soft tabs (space character) set to 2 spaces
+    - 19.2 Place 1 space before the leading brace
+    - 19.3 Place 1 space before the opening parenthesis in control statements
+    - 19.4 Set off operators with spaces
+    - 19.5 End files with a single newline character
+    - 19.6 Use indentation when making long method chains
+    - 19.7 Leave a blank line after blocks and before the next statement
+    - 19.8 Do not pad your blocks with blank lines
+    - 19.9 Do not add spaces inside parentheses
+    - 19.10 Do not add spaces inside brackets
+    - 19.11 Add spaces inside curly braces
+    - 19.12 Avoid having lines of code that are longer than 100 characters
+
+20. **Commas**
+    - 20.1 Leading commas: **Nope**
+    - 20.2 Additional trailing comma: **Yup**
+
+21. **Semicolons**
+    - 21.1 **Yup**
+
+22. **Type Casting & Coercion**
+    - 22.1 Perform type coercion at the beginning of the statement
+    - 22.2 Strings
+    - 22.3 Numbers: Use `Number` for type casting and `parseInt` always with a radix for parsing strings
+    - 22.4 If for whatever reason you are doing something wild and `parseInt` is your bottleneck
+    - 22.5 **Note:** Be careful when using bitshift operations
+    - 22.6 Booleans
+
+23. **Naming Conventions**
+    - 23.1 Avoid single letter names. Be descriptive with your naming
+    - 23.2 Use camelCase when naming objects, functions, and instances
+    - 23.3 Use PascalCase only when naming constructors or classes
+    - 23.4 Do not use trailing or leading underscores
+    - 23.5 Don't save references to `this`. Use arrow functions or Function#bind
+    - 23.6 A base filename should exactly match the name of its default export
+    - 23.7 Use camelCase when you export-default a function
+    - 23.8 Use PascalCase when you export a constructor / class / singleton / function library / bare object
+    - 23.9 Acronyms and initialisms should always be all capitalized, or all lowercased
+    - 23.10 You may optionally uppercase a constant only if it (1) is exported, (2) is a `const`, and (3) the programmer can trust it
+
+24. **Accessors**
+    - 24.1 Accessor functions for properties are not required
+    - 24.2 Do not use JavaScript getters/setters as they cause unexpected side effects
+    - 24.3 If the property/method is a `boolean`, use `isVal()` or `hasVal()`
+    - 24.4 It's okay to create get() and set() functions, but be consistent
+
+25. **Events**
+    - 25.1 When attaching data payloads to events, pass an object literal instead of a raw value
+
+26. **jQuery**
+    - 26.1 Prefix jQuery object variables with a `$`
+    - 26.2 Cache jQuery lookups
+    - 26.3 For DOM queries use Cascading `$('.sidebar ul')` or parent > child `$('.sidebar > ul')`
+    - 26.4 Use `find` with scoped jQuery object queries
